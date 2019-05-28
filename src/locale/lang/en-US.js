@@ -43,8 +43,9 @@ export default {
   org_tree_page: 'Org Tree',
   drag_drawer_page: 'Draggable Drawer',
   tree_select_page: 'Tree Selector',
-  user_manage_page: 'User Management',
+  system_manage: 'System Management',
+  user_manage: 'User Management',
   money_manage: 'Money Management',
-  money_records: 'Money Records',
+  money_record_manage: 'Money Records Management',
   money_records_static: 'Money Records Static'
 }

@@ -23,9 +23,9 @@ export const logout = (token) => {
   })
 }
 
-export const getUsers = () => {
+export const getUsers = (page, per) => {
   return axios.request({
-    url: 'users',
+    url: 'users?page=' + page + '&per=' + per,
     method: 'get'
   })
 }

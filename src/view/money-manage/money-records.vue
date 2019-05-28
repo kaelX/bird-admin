@@ -3,7 +3,7 @@
     <Card>
       <tables ref="tables" searchable search-place="top" v-model="tableData" :columns="columns" @on-delete="handleDelete">
         <header slot="header" class="header">
-          <p class="header-title">资金流水记录</p>
+          <p class="header-title">流水记录列表</p>
           <Page :total="totalCount" :current="currentPage" :page-size="pageSize" :page-size-opts="pageSizeOpts" @on-change="changePage" @on-page-size-change="changePageSize" show-total show-sizer></Page>
           <Button type="primary" ghost class="btn-header-add" @click="handleCreate">新增记录</Button>
         </header>
@@ -20,7 +20,7 @@
 import Tables from '_c/tables'
 import MoneyRecordForm from '_c/money-record-form'
 import {CreateFlag, isCreating, isSuc} from '@/api/common'
-import {getMoneyRecords, createMoneyRecord, updateMoneyRecord, deleteMoneyRecord, getAllTag} from '@/api/money_manage'
+import {getMoneyRecords, createMoneyRecord, updateMoneyRecord, deleteMoneyRecord, getAllTag} from '@/api/money_record'
 export default {
   name: 'money_records',
   components: {
@@ -218,6 +218,7 @@ export default {
   justify-content: space-between;
 }
 .header-title {
+  margin-left: 1px;
   font-size: 1.3rem;
   font-weight: bold;
 }

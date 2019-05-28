@@ -51,22 +51,23 @@ export default [
     ]
   },
   {
-    path: '/user_manage',
-    name: 'user_manage',
+    path: '/system_manage',
+    name: 'system_manage',
     meta: {
       access: ['super_admin'],
-      hideInBread: true
+      icon: 'md-hammer',
+      title: '系统管理'
     },
     component: Main,
     children: [
       {
-        path: 'user_manage_page',
-        name: 'user_manage_page',
+        path: 'user_manage',
+        name: 'user_manage',
         meta: {
           icon: 'md-people',
           title: '用户管理'
         },
-        component: () => import('@/view/user-manage/user-manage.vue')
+        component: () => import('@/view/user-manage/users.vue')
       }
     ]
   },
@@ -80,11 +81,11 @@ export default [
     component: Main,
     children: [
       {
-        path: 'money_records',
-        name: 'money_records',
+        path: 'money_record_manage',
+        name: 'money_record_manage',
         meta: {
           icon: 'ios-analytics-outline',
-          title: '资金流水记录'
+          title: '资金流水管理'
         },
         component: () => import('@/view/money-manage/money-records.vue')
       },

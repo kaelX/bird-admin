@@ -14,7 +14,7 @@
 <script>
 import InforCard from '_c/info-card'
 import CountTo from '_c/count-to'
-import {moneyRecordsStatic} from '@/api/money_manage'
+import {moneyRecordsStatic} from '@/api/money_record'
 export default {
   name: 'money_records_static',
   components: {

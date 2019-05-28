@@ -43,8 +43,9 @@ export default {
   org_tree_page: '组织结构树',
   drag_drawer_page: '可拖动抽屉',
   tree_select_page: '树状下拉选择器',
-  user_manage_page: '用户管理',
+  system_manage: '系统管理',
+  user_manage: '用户管理',
   money_manage: '资金管理',
-  money_records: '流水记录',
-  money_records_static: '流水统计'
+  money_record_manage: '流水记录管理',
+  money_records_static: '流水统计分析'
 }

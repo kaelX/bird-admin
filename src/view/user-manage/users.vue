@@ -2,8 +2,9 @@
   <div>
     <Card>
       <tables ref="tables" searchable search-place="top" v-model="tableData" :columns="columns" @on-delete="handleDelete">
-        <header slot="header" style="text-align: center">
-          <h1 class="header-title">用户管理</h1>
+        <header slot="header" class="header">
+          <span class="header-title">用户列表</span>
+          <Page :total="totalCount" :current="currentPage" :page-size="pageSize" :page-size-opts="pageSizeOpts" @on-change="changePage" @on-page-size-change="changePageSize" show-total show-sizer></Page>
           <Button type="primary" ghost class="btn-header-add" @click="handleCreate">新增用户</Button>
         </header>
       </tables>
@@ -20,13 +21,17 @@ import UserForm from '_c/user-form'
 import {getUsers, createUser, updateUser, deleteUser} from '@/api/user'
 import {CreateFlag, isCreating, isSuc} from '@/api/common'
 export default {
-  name: 'user_manage_page',
+  name: 'users',
   components: {
     Tables,
     UserForm
   },
   data () {
     return {
+      totalCount: 0,
+      currentPage: 1,
+      pageSize: 20,
+      pageSizeOpts: [10, 20, 50, 100],
       modalTitle: '',
       modalVisible: false,
       user: {},
@@ -80,9 +85,20 @@ export default {
     }
   },
   methods: {
+    changePage (currentPage) {
+      this.currentPage = currentPage
+      this.setTableData()
+    },
+    changePageSize (currentPageSize) {
+      this.pageSize = currentPageSize
+      this.setTableData()
+    },
     setTableData () {
-      getUsers().then(res => {
-        this.tableData = res.data.data
+      getUsers(this.currentPage, this.pageSize).then(res => {
+        let data = res.data.data
+        let pageInfo = data.page_info
+        this.totalCount = pageInfo.total_count
+        this.tableData = data.users
       })
     },
     setModalTitle (title) {
@@ -162,11 +178,17 @@ export default {
 .count-style{
   font-size: 50px;
 }
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 .header-title{
-  display: inline-block;
+  margin-left: 1px;
+  font-size: 1.3rem;
+  font-weight: bold;
 }
 .btn-header-add{
-  float: right;
   height: -webkit-fill-available;
   margin-right: 1px;
 }
