@@ -13,7 +13,9 @@
           <Icon :size="14" type="md-lock"></Icon>
         </span>
       </Input>
+      <span class="login-tip">{{loginTip}}</span>
     </FormItem>
+
     <FormItem>
       <Button @click="handleSubmit" type="primary" long>登录</Button>
     </FormItem>
@@ -24,6 +26,7 @@ import {rsaEncrypt} from '@/libs/encryption'
 export default {
   name: 'LoginForm',
   props: {
+    loginTip: String,
     userNameRules: {
       type: Array,
       default: () => {
@@ -49,6 +52,17 @@ export default {
       }
     }
   },
+  watch: {
+    loginTip (val) {
+      if (val !== '') {
+        const elem = document.getElementsByClassName('login-tip')[0]
+        const grandElem = elem.parentNode.parentNode
+        if (!grandElem.classList.contains('with-login-tip')) {
+          grandElem.classList.add('with-login-tip')
+        }
+      }
+    }
+  },
   computed: {
     rules () {
       return {
@@ -71,3 +85,13 @@ export default {
   }
 }
 </script>
+
+<style lang="less">
+.login-tip {
+  font-size: 0.9rem;
+  color: #FF6A6A !important;
+}
+.with-login-tip {
+  margin-bottom: 0.7rem;
+}
+</style>

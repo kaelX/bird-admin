@@ -1,8 +1,16 @@
 import axios from '@/libs/api.request'
+import {toParam} from '@/api/common'
 
 export const moneyRecordsStatic = () => {
   return axios.request({
     url: 'money_records/static',
+    method: 'get'
+  })
+}
+
+export const staticTagPercent = (start_at, end_at) => {
+  return axios.request({
+    url: toParam('money_records/static_tag_percent', {start_at, end_at}),
     method: 'get'
   })
 }

@@ -9,3 +9,10 @@ export const getRouterReq = (access) => {
     method: 'get'
   })
 }
+
+export const ping = () => {
+  return axios.request({
+    url: 'ping',
+    method: 'get'
+  })
+}

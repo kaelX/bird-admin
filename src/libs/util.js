@@ -1,19 +1,23 @@
 import Cookies from 'js-cookie'
 // cookie保存的天数
 import config from '@/config'
-import { forEach, hasOneOf, objEqual } from '@/libs/tools'
-const { title, cookieExpires, useI18n } = config
+import {forEach, hasOneOf, objEqual} from '@/libs/tools'
+const {title, useI18n} = config
 
 export const TOKEN_KEY = 'token'
 
 export const setToken = (token) => {
-  Cookies.set(TOKEN_KEY, token, { expires: cookieExpires || 1 })
+  Cookies.set(TOKEN_KEY, token)
 }
 
 export const getToken = () => {
   const token = Cookies.get(TOKEN_KEY)
   if (token) return token
   else return false
+}
+
+export const removeToken = () => {
+  Cookies.remove(TOKEN_KEY)
 }
 
 export const hasChild = (item) => {
@@ -348,6 +352,23 @@ export const localSave = (key, value) => {
 
 export const localRead = (key) => {
   return localStorage.getItem(key) || ''
+}
+
+export const localMapSave = (key, value) => {
+  let map = {}
+  map[key] = value
+  localStorage.setItem(key, JSON.stringify(map))
+}
+
+export const localMapRead = (key, defaultVal) => {
+  const mapStr = localStorage.getItem(key)
+  if (!mapStr) return defaultVal
+  try {
+    const map = JSON.parse(mapStr)
+    return map[key]
+  } catch (error) {
+    return defaultVal
+  }
 }
 
 // scrollTop animation

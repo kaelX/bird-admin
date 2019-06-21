@@ -24,9 +24,13 @@ export default {
     messageUnreadList: [],
     messageReadedList: [],
     messageTrashList: [],
-    messageContentStore: {}
+    messageContentStore: {},
+    loginTip: ''
   },
   mutations: {
+    setLoginTip (state, tip) {
+      state.loginTip = tip
+    },
     setAvatar (state, avatarPath) {
       state.avatarImgPath = avatarPath
     },
@@ -82,11 +86,14 @@ export default {
           userName,
           password
         }).then(res => {
-          if (isSuc(res.data)) {
-            const data = res.data.data
-            commit('setToken', data.token)
-            resolve()
+          const data = res.data
+          if (isSuc(data)) {
+            commit('setLoginTip', '')
+            commit('setToken', data.data.token)
+          } else {
+            commit('setLoginTip', data.msg)
           }
+          resolve()
         }).catch(err => {
           reject(err)
         })
@@ -116,7 +123,7 @@ export default {
             const data = res.data.data
             commit('setAvatar', data.avatar)
             commit('setUserName', data.name)
-            commit('setUserId', data.user_id)
+            commit('setUserId', data.id)
             commit('setAccess', data.access)
             commit('setHasGetInfo', true)
             resolve(data)

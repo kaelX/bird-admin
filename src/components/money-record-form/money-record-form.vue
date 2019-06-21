@@ -1,7 +1,7 @@
 <template>
   <Form ref="moneyRecordForm" :model="form" :rules="rules">
     <FormItem label="记录时间" prop="happened_at">
-      <DatePicker type="date" placeholder="记录时间" v-model="form.happened_at"></DatePicker>
+      <DatePicker type="date" placeholder="记录时间" v-model="form.happened_at" @on-change="happenedAtChanged"></DatePicker>
     </FormItem>
 
     <FormItem label="收入或支出" prop="income_flag">
@@ -38,7 +38,6 @@
 </template>
 
 <script>
-import dateUtil from 'iview/src/utils/date'
 export default {
   name: 'MoneyRecordForm',
   props: {form: Object},
@@ -48,7 +47,6 @@ export default {
       if (value === undefined || isNaN(val)) {
         callback(new Error('记录时间不能为空'))
       } else {
-        this.form.happened_at_str = dateUtil.format(value, 'yyyy-MM-dd')
         callback()
       }
     }
@@ -78,6 +76,7 @@ export default {
     }
     const parentIdRules = [{validator: parentIdValidator, trigger: 'blur'}]
     return {
+      happenedAt: '',
       happenedAtRules: happenedAtRules,
       incomeFlagRules: incomeFlagRules,
       amountRules: amountRules,
@@ -97,12 +96,16 @@ export default {
     }
   },
   methods: {
+    happenedAtChanged (val, type) {
+      this.happenedAt = val
+    },
+
     handleSubmit () {
       this.$refs.moneyRecordForm.validate((valid) => {
         if (valid) {
           this.$emit('on-success-valid', {
             id: this.form.id,
-            happenedAt: this.form.happened_at_str,
+            happenedAt: this.happenedAt,
             incomeFlag: this.form.income_flag,
             amount: this.form.amountVal,
             tag: this.form.tag_value,

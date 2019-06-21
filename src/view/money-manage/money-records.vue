@@ -4,7 +4,7 @@
       <tables ref="tables" searchable search-place="top" v-model="tableData" :columns="columns" @on-delete="handleDelete">
         <header slot="header" class="header">
           <p class="header-title">流水记录列表</p>
-          <Page :total="totalCount" :current="currentPage" :page-size="pageSize" :page-size-opts="pageSizeOpts" @on-change="changePage" @on-page-size-change="changePageSize" show-total show-sizer></Page>
+          <Page :total="totalCount" :current="currentPage()" :page-size="pageSize()" :page-size-opts="pageSizeOpts" @on-change="changePage" @on-page-size-change="changePageSize" show-total show-sizer></Page>
           <Button type="primary" ghost class="btn-header-add" @click="handleCreate">新增记录</Button>
         </header>
       </tables>
@@ -20,7 +20,12 @@
 import Tables from '_c/tables'
 import MoneyRecordForm from '_c/money-record-form'
 import {CreateFlag, isCreating, isSuc} from '@/api/common'
-import {getMoneyRecords, createMoneyRecord, updateMoneyRecord, deleteMoneyRecord, getAllTag} from '@/api/money_record'
+import {getMoneyRecords, createMoneyRecord, updateMoneyRecord, deleteMoneyRecord, getAllTag} from '@/api/moneyRecord'
+import {localMapSave, localMapRead} from '@/libs/util'
+const MoneyRecordPageSize = 'MoneyRecordPageSize'
+const DefaultMoneyRecordPageSize = 20
+const MoneyRecordCurrentPage = 'MoneyRecordCurrentPage'
+const DefaultMoneyRecordCurrentPage = 1
 export default {
   name: 'money_records',
   components: {
@@ -30,9 +35,7 @@ export default {
   data () {
     return {
       totalCount: 0,
-      currentPage: 1,
-      pageSize: 20,
-      pageSizeOpts: [10, 20, 50, 100],
+      pageSizeOpts: [10, 20, 50, 100, 1000],
       modalTitle: '',
       modalVisible: false,
       moneyRecord: {},
@@ -108,16 +111,22 @@ export default {
     }
   },
   methods: {
-    changePage (currentPage) {
-      this.currentPage = currentPage
+    currentPage () {
+      return localMapRead(MoneyRecordCurrentPage, DefaultMoneyRecordCurrentPage)
+    },
+    pageSize () {
+      return localMapRead(MoneyRecordPageSize, DefaultMoneyRecordPageSize)
+    },
+    changePage (val) {
+      localMapSave(MoneyRecordCurrentPage, val)
       this.setTableData()
     },
-    changePageSize (currentPageSize) {
-      this.pageSize = currentPageSize
+    changePageSize (val) {
+      localMapSave(MoneyRecordPageSize, val)
       this.setTableData()
     },
     setTableData () {
-      getMoneyRecords(this.currentPage, this.pageSize).then(res => {
+      getMoneyRecords(this.currentPage(), this.pageSize()).then(res => {
         let data = res.data.data
         let pageInfo = data.page_info
         this.totalCount = pageInfo.total_count

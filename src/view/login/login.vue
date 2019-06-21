@@ -7,7 +7,7 @@
     <div class="login-con">
       <Card icon="log-in" title="欢迎登录" :bordered="false">
         <div class="form-con">
-          <login-form @on-success-valid="handleSubmit"></login-form>
+          <login-form @on-success-valid="handleSubmit" :login-tip="getLoginTip"></login-form>
         </div>
       </Card>
     </div>
@@ -20,6 +20,11 @@ import { mapActions } from 'vuex'
 export default {
   components: {
     LoginForm
+  },
+  computed: {
+    getLoginTip () {
+      return this.$store.state.user.loginTip
+    }
   },
   methods: {
     ...mapActions([
@@ -40,5 +45,4 @@ export default {
 </script>
 
 <style>
-
 </style>

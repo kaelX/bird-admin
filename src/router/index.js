@@ -3,9 +3,10 @@ import Router from 'vue-router'
 import routes from './routers'
 import store from '@/store'
 import iView from 'iview'
-import { setToken, getToken, canTurnTo, setTitle } from '@/libs/util'
+import {getToken, removeToken, canTurnTo, setTitle} from '@/libs/util'
+import {ping} from '@/api/routers'
 import config from '@/config'
-const { homeName } = config
+const {homeName} = config
 
 Vue.use(Router)
 const router = new Router({
@@ -36,6 +37,17 @@ router.beforeEach((to, from, next) => {
       name: homeName // 跳转到homeName页
     })
   } else {
+    ping().then(res => {
+      const {data} = res
+      if (store.state.user.hasGetInfo && store.state.user.userId !== data.data.user_id) {
+        removeToken()
+        next({name: LOGIN_PAGE_NAME})
+      }
+    }).catch(() => {
+      removeToken()
+      next({name: LOGIN_PAGE_NAME})
+    })
+
     if (store.state.user.hasGetInfo) {
       turnTo(to, store.state.user.access, next)
     } else {
@@ -43,10 +55,8 @@ router.beforeEach((to, from, next) => {
         // 拉取用户信息，通过用户权限和跳转的页面的name来判断是否有权限访问;access必须是一个数组，如：['super_admin'] ['super_admin', 'admin']
         turnTo(to, user.access, next)
       }).catch(() => {
-        setToken('')
-        next({
-          name: 'login'
-        })
+        removeToken()
+        next({name: LOGIN_PAGE_NAME})
       })
     }
   }

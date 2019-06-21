@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
+import VCharts from 'v-charts'
 import router from './router'
 import store from './store'
 import iView from 'iview'
@@ -22,6 +23,7 @@ Vue.use(iView, {
 })
 Vue.use(TreeTable)
 Vue.use(VOrgTree)
+Vue.use(VCharts)
 /**
  * @description 注册admin内置插件
  */
