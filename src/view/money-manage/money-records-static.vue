@@ -12,20 +12,34 @@
     <Row style="margin-top: 10px;">
       <i-col span="8">
         <Select v-model="pieDate" @on-change="pieDateChanged" size="large" placeholder="请选择时间段">
-          <Option value="0">上个月</Option>
-          <Option value="1">上周</Option>
-          <Option value="2">过去7天</Option>
-          <Option value="3">过去30天</Option>
-          <Option value="4">过去90天</Option>
-          <Option value="5">过去365天</Option>
-          <Option value="6">自定义时间段</Option>
+          <Option value="lastMonth">上个月</Option>
+          <Option value="lastWeek">上周</Option>
+          <Option value="currentMonth">本月</Option>
+          <Option value="currentWeek">本周</Option>
+          <Option value="pastWeek">过去7天</Option>
+          <Option value="pastMonth">过去30天</Option>
+          <Option value="pastQuater">过去90天</Option>
+          <Option value="pastYear">过去365天</Option>
+          <Option value="custom">自定义时间段</Option>
         </Select>
       </i-col>
 
-      <i-col span="16" v-if="pieDate === '6'">
+      <i-col span="8" style="margin-left: 4px;">
+        <Select v-model="subjects" :multiple="isSubjectMultiple" size="large" placeholder="请选择主体">
+          <Option v-for="item in subjectOptions" :value="item.value" :key="item.value">{{ item.label }}</Option>
+        </Select>
+      </i-col>
+
+      <i-col span="7" style="margin-left: 8px;">
+        <Checkbox v-model="personalShareFlag" size="large" style="font-size: 1.2rem;">只统计个人份额</Checkbox>
+      </i-col>
+    </Row>
+
+    <Row style="margin-top: 10px;" v-if="pieDate === 'custom'">
+      <i-col span="16">
         <label class="time-at">起始时间</label>
         <DatePicker type="date" placeholder="起始时间" size="large" :editable="datePickerEditable" v-model="startDate" @on-change="startDateChanged"></DatePicker>
-        <label class="time-at">终止时间</label>
+        <label class="time-at time-end">终止时间</label>
         <DatePicker type="date" placeholder="终止时间" size="large" :editable="datePickerEditable" v-model="endDate" @on-change="endDateChanged"></DatePicker>
       </i-col>
     </Row>
@@ -57,7 +71,7 @@
 import InforCard from '_c/info-card'
 import CountTo from '_c/count-to'
 import {ChartPie} from '_c/charts'
-import {moneyRecordsStatic, staticTagPercent} from '@/api/moneyRecord'
+import {moneyRecordsStatic, staticTagPercent, options} from '@/api/moneyRecord'
 import {parseDateFlag} from '@/libs/time-and-date'
 export default {
   name: 'money_records_static',
@@ -70,10 +84,14 @@ export default {
     return {
       pieSettings: {radius: 90, offsetY: 200},
       widthChangeDelay: 100,
-      pieDate: '0',
+      pieDate: 'lastMonth',
+      subjects: 'personal',
       startAt: '',
       endAt: '',
       datePickerEditable: false,
+      subjectOptions: [],
+      isSubjectMultiple: true,
+      personalShareFlag: true,
       inforCardData: [
         { title: '投资总额', icon: 'md-card', count: 0, color: '#19be6b' },
         { title: '投资回报总额', icon: 'ios-cash', count: 0, color: '#9A66E4' },
@@ -96,13 +114,26 @@ export default {
   },
   watch: {
     startAt (startAt) {
-      this.setPieData(startAt, this.endAt)
+      this.setPieData(startAt, this.endAt, this.subjects, this.personalShareFlag)
     },
     endAt (endAt) {
-      this.setPieData(this.startAt, endAt)
+      this.setPieData(this.startAt, endAt, this.subjects, this.personalShareFlag)
+    },
+    subjects (subjects) {
+      this.setPieData(this.startAt, this.endAt, subjects, this.personalShareFlag)
+    },
+    personalShareFlag (flag) {
+      this.setPieData(this.startAt, this.endAt, this.subjects, flag)
     }
   },
   methods: {
+    setOptions () {
+      options().then(res => {
+        const data = res.data.data
+        this.subjectOptions = data.subject_options
+      })
+    },
+
     setInforCardData () {
       moneyRecordsStatic().then(res => {
         let data = res.data.data
@@ -113,8 +144,8 @@ export default {
       })
     },
 
-    setPieData (startAt, endAt) {
-      staticTagPercent(startAt, endAt).then(res => {
+    setPieData (startAt, endAt, subjects, personalShareFlag) {
+      staticTagPercent(startAt, endAt, subjects, personalShareFlag).then(res => {
         let data = res.data.data
         this.totals.rows = data.totals
         this.outgos.rows = data.outgos
@@ -124,7 +155,7 @@ export default {
 
     pieDateChanged (dateValue) {
       this.pieDate = dateValue
-      if (dateValue === '6') {
+      if (dateValue === 'custom') {
         this.startDate = this.startAt
         this.endDate = this.endAt
       } else {
@@ -143,21 +174,24 @@ export default {
     }
   },
   mounted () {
+    this.setOptions()
     this.setInforCardData()
     this.pieDateChanged(this.pieDate)
   }
 }
 </script>
 <style lang="less">
-.count-style{
+.count-style {
   font-size: 1rem;
 }
-.pieTitle{
+.pieTitle {
   font-size: 1.1rem;
 }
-.time-at{
+.time-at {
   font-size: 1rem;
-  margin-left: 1.5rem;
   margin-right: 0.5rem;
+}
+.time-end {
+  margin-left: 1.5rem;
 }
 </style>

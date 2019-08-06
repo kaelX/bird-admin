@@ -20,7 +20,7 @@
 import Tables from '_c/tables'
 import MoneyRecordForm from '_c/money-record-form'
 import {CreateFlag, isCreating, isSuc} from '@/api/common'
-import {getMoneyRecords, createMoneyRecord, updateMoneyRecord, deleteMoneyRecord, getAllTag} from '@/api/moneyRecord'
+import {getMoneyRecords, createMoneyRecord, updateMoneyRecord, deleteMoneyRecord, options} from '@/api/moneyRecord'
 import {localMapSave, localMapRead} from '@/libs/util'
 const MoneyRecordPageSize = 'MoneyRecordPageSize'
 const DefaultMoneyRecordPageSize = 20
@@ -40,7 +40,8 @@ export default {
       modalVisible: false,
       moneyRecord: {},
       investMoneyRecords: [],
-      moneyRecordTags: [],
+      tagOptions: [],
+      subjectOptions: [],
       columns: [
         { title: '发生时间', key: 'happened_at_str', sortable: true },
         {
@@ -71,6 +72,16 @@ export default {
             return row.tag_label.indexOf(value) > -1
           }
         },
+        {
+          title: '主体',
+          key: 'subject_name',
+          filters: [],
+          filterMultiple: false,
+          filterMethod (value, row) {
+            return row.subject_name.indexOf(value) > -1
+          }
+        },
+        {title: '个人份额', key: 'personal_share'},
         {title: '备注', key: 'remark'},
         {
           title: '操作',
@@ -134,13 +145,19 @@ export default {
         this.investMoneyRecords = data.invest_money_records
       })
     },
-    setMoneyRecordTags () {
-      getAllTag().then(res => {
-        this.moneyRecordTags = res.data.data
-        const len = this.moneyRecordTags.length
-        for (var i = 0; i < len; i++) {
-          var item = this.moneyRecordTags[i]
-          this.columns[3].filters.push({label: item.value, value: item.value})
+    setOptions () {
+      options().then(res => {
+        const data = res.data.data
+        this.tagOptions = data.tag_options
+        for (var i = 0; i < this.tagOptions.length; i++) {
+          var item = this.tagOptions[i]
+          this.columns[3].filters.push({label: item.label, value: item.label})
+        }
+
+        this.subjectOptions = data.subject_options
+        for (i = 0; i < this.subjectOptions.length; i++) {
+          item = this.subjectOptions[i]
+          this.columns[4].filters.push({label: item.label, value: item.label})
         }
       })
     },
@@ -153,10 +170,11 @@ export default {
     setMoneyRecord (moneyRecord) {
       this.moneyRecord = moneyRecord
       this.moneyRecord.investMoneyRecords = this.investMoneyRecords
-      this.moneyRecord.moneyRecordTags = this.moneyRecordTags
+      this.moneyRecord.tagOptions = this.tagOptions
+      this.moneyRecord.subjectOptions = this.subjectOptions
     },
     handleCreate () {
-      this.setMoneyRecord({id: CreateFlag})
+      this.setMoneyRecord({id: CreateFlag, subject: 'personal'})
       this.setModalTitle('新增资金流水记录')
       this.setModalVisible(true)
     },
@@ -176,8 +194,8 @@ export default {
         }
       })
     },
-    createSubmit (happenedAt, incomeFlag, amount, tag, remark, parentId) {
-      createMoneyRecord(happenedAt, incomeFlag, amount, tag, remark, parentId).then(res => {
+    createSubmit (happenedAt, incomeFlag, amount, tag, subject, personalShare, remark, parentId) {
+      createMoneyRecord(happenedAt, incomeFlag, amount, tag, subject, personalShare, remark, parentId).then(res => {
         this.setModalVisible(false)
         const data = res.data
         if (isSuc(data)) {
@@ -188,8 +206,8 @@ export default {
         }
       })
     },
-    updateSubmit (id, happenedAt, incomeFlag, amount, tag, remark, parentId) {
-      updateMoneyRecord(id, happenedAt, incomeFlag, amount, tag, remark, parentId).then(res => {
+    updateSubmit (id, happenedAt, incomeFlag, amount, tag, subject, personalShare, remark, parentId) {
+      updateMoneyRecord(id, happenedAt, incomeFlag, amount, tag, subject, personalShare, remark, parentId).then(res => {
         this.setModalVisible(false)
         const data = res.data
         if (isSuc(data)) {
@@ -200,11 +218,11 @@ export default {
         }
       })
     },
-    handleSubmit ({id, happenedAt, incomeFlag, amount, tag, remark, parentId}) {
+    handleSubmit ({id, happenedAt, incomeFlag, amount, tag, subject, personalShare, remark, parentId}) {
       if (isCreating(id)) {
-        this.createSubmit(happenedAt, incomeFlag, amount, tag, remark, parentId)
+        this.createSubmit(happenedAt, incomeFlag, amount, tag, subject, personalShare, remark, parentId)
       } else {
-        this.updateSubmit(id, happenedAt, incomeFlag, amount, tag, remark, parentId)
+        this.updateSubmit(id, happenedAt, incomeFlag, amount, tag, subject, personalShare, remark, parentId)
       }
     }
   },
@@ -215,7 +233,7 @@ export default {
   },
   mounted () {
     this.setTableData()
-    this.setMoneyRecordTags()
+    this.setOptions()
   }
 }
 </script>

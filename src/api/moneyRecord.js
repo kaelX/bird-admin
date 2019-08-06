@@ -8,9 +8,9 @@ export const moneyRecordsStatic = () => {
   })
 }
 
-export const staticTagPercent = (start_at, end_at) => {
+export const staticTagPercent = (start_at, end_at, subjects, personal_share_flag) => {
   return axios.request({
-    url: toParam('money_records/static_tag_percent', {start_at, end_at}),
+    url: toParam('money_records/static_tag_percent', {start_at, end_at, subjects, personal_share_flag}),
     method: 'get'
   })
 }
@@ -22,8 +22,8 @@ export const getMoneyRecords = (page, per) => {
   })
 }
 
-export const createMoneyRecord = (happened_at, income_flag, amount, tag, remark, parent_id) => {
-  const data = {happened_at, income_flag, amount, tag, remark, parent_id}
+export const createMoneyRecord = (happened_at, income_flag, amount, tag, subject, personal_share, remark, parent_id) => {
+  const data = {happened_at, income_flag, amount, tag, subject, personal_share, remark, parent_id}
   return axios.request({
     url: 'money_records',
     data,
@@ -31,8 +31,8 @@ export const createMoneyRecord = (happened_at, income_flag, amount, tag, remark,
   })
 }
 
-export const updateMoneyRecord = (id, happened_at, income_flag, amount, tag, remark, parent_id) => {
-  const data = {happened_at, income_flag, amount, tag, remark, parent_id}
+export const updateMoneyRecord = (id, happened_at, income_flag, amount, tag, subject, personal_share, remark, parent_id) => {
+  const data = {happened_at, income_flag, amount, tag, subject, personal_share, remark, parent_id}
   return axios.request({
     url: 'money_records/' + id,
     data,
@@ -47,9 +47,9 @@ export const deleteMoneyRecord = (id) => {
   })
 }
 
-export const getAllTag = () => {
+export const options = () => {
   return axios.request({
-    url: 'money_records/all_tag',
+    url: 'money_records/options',
     method: 'get'
   })
 }

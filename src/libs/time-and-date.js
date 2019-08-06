@@ -2,17 +2,21 @@ const moment = require('moment')
 const dateFormat = 'YYYY-MM-DD'
 
 export const parseDateFlag = (flag) => {
-  if (flag === '0') {
+  if (flag === 'lastMonth') {
     return lastMonthDate()
-  } else if (flag === '1') {
+  } else if (flag === 'lastWeek') {
     return lastWeekDate()
-  } else if (flag === '2') {
+  } else if (flag === 'currentMonth') {
+    return currentMonthDate()
+  } else if (flag === 'currentWeek') {
+    return currentWeekDate()
+  } else if (flag === 'pastWeek') {
     return pastWeekDate()
-  } else if (flag === '3') {
+  } else if (flag === 'pastMonth') {
     return pastMonthDate()
-  } else if (flag === '4') {
+  } else if (flag === 'pastQuater') {
     return pastQuaterDate()
-  } else if (flag === '5') {
+  } else if (flag === 'pastYear') {
     return pastYearDate()
   } else {
     return lastMonthDate()
@@ -24,8 +28,18 @@ export const lastMonthDate = () => {
   return [re.startOf('month').format(dateFormat), re.endOf('month').format(dateFormat)]
 }
 
+export const currentMonthDate = () => {
+  var re = moment().month(moment().month())
+  return [re.startOf('month').format(dateFormat), re.endOf('month').format(dateFormat)]
+}
+
 export const lastWeekDate = () => {
   var re = moment().week(moment().week() - 1)
+  return [re.startOf('week').format(dateFormat), re.endOf('week').format(dateFormat)]
+}
+
+export const currentWeekDate = () => {
+  var re = moment().week(moment().week())
   return [re.startOf('week').format(dateFormat), re.endOf('week').format(dateFormat)]
 }
 
@@ -43,4 +57,8 @@ export const pastQuaterDate = () => {
 
 export const pastYearDate = () => {
   return [moment().subtract(365, 'days').format(dateFormat), moment().subtract(1, 'days').format(dateFormat)]
+}
+
+export const parseDate = (date) => {
+  return moment(date).format(dateFormat)
 }
